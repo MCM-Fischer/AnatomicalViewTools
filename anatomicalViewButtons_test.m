@@ -97,3 +97,7 @@ anatomicalViewButtons('RAS')
 %% Convert 'RAS' to 'SRA'
 % visualizeMeshes(transformPoint3d(mesh, anatomicalCoordinateSystemTFM('RAS','SRA')))
 % anatomicalViewButtons('SRA')
+
+
+% [List.f, List.p] = matlab.codetools.requiredFilesAndProducts([mfilename '.m']); 
+% List.f = List.f'; List.p = List.p';
