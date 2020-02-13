@@ -1,6 +1,9 @@
 clearvars; close all; opengl hardware
 
-load('femur') % in 'RAS'
+%% Load example data
+websave('z013.mat','https://github.com/RWTHmediTEC/VSDFullBodyBoneModels/raw/master/Bones/z013.mat');
+load('z013.mat') % in 'RAS'
+mesh=B(5).mesh;
 
 %% Test
 validStrings={...
