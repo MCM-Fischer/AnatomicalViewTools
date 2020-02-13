@@ -13,7 +13,7 @@ function TFM = anatomicalCoordinateSystemTFM(origin, target)
 %
 % AUTHOR: Maximilian C. M. Fischer
 % COPYRIGHT (C) 2020 Maximilian C. M. Fischer
-% LICENSE: 
+% LICENSE: EUPL v1.2
 %
 
 p = inputParser;

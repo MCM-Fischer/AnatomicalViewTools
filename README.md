@@ -11,4 +11,4 @@ Run anatomicalViewButtons_example.m in MATLAB.
 none
 
 ## License
-?
+EUPL v1.2
