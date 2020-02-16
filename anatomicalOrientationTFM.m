@@ -1,6 +1,6 @@
-function TFM = anatomicalCoordinateSystemTFM(origin, target)
-%ANATOMICALCOORDINATESYSTEMTFM creates the transform from the origin to the
-%target anatomical coordinate system
+function TFM = anatomicalOrientationTFM(origin, target)
+%ANATOMICALORIENTATIONTFM creates the transform from the origin to the
+%target orientation of the anatomical coordinate system
 % 
 %   The three letters describe the positive XYZ direction:
 %       

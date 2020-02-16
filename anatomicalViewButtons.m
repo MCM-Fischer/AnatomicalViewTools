@@ -7,7 +7,7 @@ function anatomicalViewButtons(varargin)
 %   direction:
 %     ________________________________________________________
 %     |    Axes    |      X      |      Y      |      Z      |
-%     |  Positive  |   [R]ight   |  [I]nferior |  [A]nterior |
+%     |  Positive  |   [R]ight   |  [I]nferior | [A]nterior  |
 %     |  Negative  |    Left     |   Superior  |  Posterior  |
 %     |______________________________________________________|
 %
@@ -19,25 +19,17 @@ function anatomicalViewButtons(varargin)
 % LICENSE: EUPL v1.2
 %
 
-mode = 'RAS';
-
-switch length(varargin)
-    case 0
-        hAx = gca;
-    case 1
-        if isscalar(varargin{1}) && ...
-                ishandle(varargin{1}) && ...
-                strcmp(get(varargin{1}, 'type'), 'axes')
-            hAx = varargin{1};
-        else
-            hAx = gca;
-            mode = upper(varargin{1});
-        end
-    case 2
+hAx=gca;
+if ~isempty(varargin)
+    if isscalar(varargin{1}) && ishandle(varargin{1}) && ...
+            strcmp(get(varargin{1}, 'type'), 'axes')
         hAx = varargin{1};
-        mode = upper(varargin{2});
+        varargin(1)=[];
+    end
 end
 
+p = inputParser;
+p.KeepUnmatched=true;
 validStrings={...
     'RAS','RSP','RPI','RIA',...
     'ALS','ASR','ARI','AIL',...
@@ -45,7 +37,10 @@ validStrings={...
     'PRS','PSL','PLI','PIR',...
     'IAR','IRP','IPL','ILS',...
     'SAL','SLP','SPR','SRA'};
-validatestring(mode,validStrings);
+addOptional(p,'orientation','RAS',@(x) any(validatestring(upper(x),validStrings)))
+parse(p,varargin{:});
+orientation = upper(p.Results.orientation);
+mc3dInputs=p.Unmatched;
 
 % uicontrol Button Size
 BSX = 0.1; BSY = 0.023;
@@ -54,7 +49,7 @@ BSX = 0.1; BSY = 0.023;
 FontPropsA.FontUnits = 'normalized';
 FontPropsA.FontSize = 0.8;
 % Rotate-buttons
-switch mode
+switch orientation
 %% R
     case 'RAS'
         MC3D(:,:,1)=[ 0  1  0 0;-1  0  0 0; 0  0  1 0; 0 0 0 1];
@@ -231,19 +226,19 @@ switch mode
         MC3D(:,:,6)=[ 0  1  0 0;-1  0  0 0; 0  0  1 0; 0 0 0 1];
 end
 
-mouseControl3d(hAx,MC3D(:,:,3))
+mouseControl3d(hAx,MC3D(:,:,3),mc3dInputs)
 hFig=get(hAx, 'parent');
 uicontrol(hFig,'Units','normalized','Position',[0.5-BSX*3/2 0.01+BSY BSX BSY],FontPropsA,...
-    'String','Left',     'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,1)));
+    'String','Left',     'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,1),mc3dInputs));
 uicontrol(hFig,'Units','normalized','Position',[0.5-BSX*3/2     0.01 BSX BSY],FontPropsA,...
-    'String','Right',    'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,2)));
+    'String','Right',    'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,2),mc3dInputs));
 uicontrol(hFig,'Units','normalized','Position',[0.5-BSX*1/2 0.01+BSY BSX BSY],FontPropsA,...
-    'String','Anterior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,3)));
+    'String','Anterior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,3),mc3dInputs));
 uicontrol(hFig,'Units','normalized','Position',[0.5-BSX*1/2     0.01 BSX BSY],FontPropsA,...
-    'String','Posterior','Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,4)));
+    'String','Posterior','Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,4),mc3dInputs));
 uicontrol(hFig,'Units','normalized','Position',[0.5+BSX*1/2 0.01+BSY BSX BSY],FontPropsA,...
-    'String','Superior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,5)));
+    'String','Superior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,5),mc3dInputs));
 uicontrol(hFig,'Units','normalized','Position',[0.5+BSX*1/2     0.01 BSX BSY],FontPropsA,...
-    'String','Inferior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,6)));
+    'String','Inferior', 'Callback',@(s,e) mouseControl3d(hAx, MC3D(:,:,6),mc3dInputs));
 
 end

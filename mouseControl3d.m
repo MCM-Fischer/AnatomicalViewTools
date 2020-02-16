@@ -1,13 +1,26 @@
 function mouseControl3d(varargin)
 %MOUSECONTROL3D enables mouse camera control on an certain figure axes.
 %
-%   mouseControl3d enables mouse control on the current axes: 
-%       Mouse:
-%           Wheel click : Rotate
-%           Wheel scroll: Zoom
-%           Right click : Pan
-%       Keys:
-%           r : Change mouse rotation mode from inplane to outplane
+%   mouseControl3d enables mouse control on the current axes (gca): 
+%   Mouse:
+%       Wheel click : Rotate
+%       Wheel scroll: Zoom
+%       Right click : Pan
+%   Keys:
+%       r : Change mouse rotation mode from inplane to outplane
+%
+%   mouseControl3d(MVIEW) sets the inital view as 4-by-4 rotation matrix.
+%   Default is eye(4);
+%
+%   mouseControl3d(AX, ...) enables mouse control on AX instead of the 
+%   current axes.
+%
+%   mouseControl3d(...,'CallbackFunction',@CallbackFunction,...) sets the 
+%   callback function for a mouse or key callback. Following options are
+%   available:
+%       'LeftButtonFcn' : A custom function for the left mouse button.
+%       'ButtonUpFcn'   : An additonal mouse button up callback.
+%       'SpaceKeyFcn'   : A custom function for the space key.
 %
 %   Example
 %       [X,Y,Z] = peaks(30);
@@ -20,29 +33,39 @@ function mouseControl3d(varargin)
 %       https://www.mathworks.com/matlabcentral/fileexchange/28095
 %
 % ---------
-% Author: Dirk-Jan Kroon, University of Twente (source), oqilipo (rework)
+% Author: Dirk-Jan Kroon (source), MCMF (update)
 % Created: 2010-07
+% Update: 2020-02
+%
 
-if(nargin<1)
-    handle=gca;
-else
-    handle=varargin{1};
-    % Check if first argument is a handle
-    if ishandle(handle)
-        if(~strcmpi(get(handle,'Type'),'axes'))
-            error('mouse3d:input','no valid axis handle');
-        end
-    else
-        error('mouse3d:input','no valid axis handle');
+axH=gca;
+if ~isempty(varargin)
+    if isscalar(varargin{1}) && ishandle(varargin{1}) && ...
+            strcmp(get(varargin{1}, 'type'), 'axes')
+        axH = varargin{1};
+        varargin(1)=[];
     end
 end
 
-handles.figure1=get(handle,'Parent');
-handles.axes1=handle;
+handles.figure1=get(axH,'Parent');
+handles.axes1=axH;
 
-mouseControl3d_OpeningFcn(gcf, handles, varargin);
+mouseControl3d_OpeningFcn(gcf, handles, varargin{:});
 
-function mouseControl3d_OpeningFcn(hObject, handles, addinarg)
+function mouseControl3d_OpeningFcn(hObject, handles, varargin)
+
+parser = inputParser;
+defaultMview=eye(4);
+addOptional(parser, 'Mview', defaultMview, @(x) validateattributes(x,...
+    {'numeric'},{'size',[4,4],'>=',-1,'<=',1,'finite','nonnan'}));
+addParameter(parser, 'LeftButtonFcn', [], @(x) isempty(x) || isa(x, 'function_handle'));
+addParameter(parser, 'ButtonUpFcn', [], @(x) isempty(x) || isa(x, 'function_handle'));
+addParameter(parser, 'SpaceKeyFcn', [], @(x) isempty(x) || isa(x, 'function_handle'));
+parse(parser, varargin{:});
+data.Mview = parser.Results.Mview;
+data.LeftButtonFcn = parser.Results.LeftButtonFcn;
+data.ButtonUpFcn = parser.Results.ButtonUpFcn;
+data.SpaceKeyFcn = parser.Results.SpaceKeyFcn;
 
 % Choose default command line output for mouse3d
 handles.output = hObject;
@@ -57,11 +80,6 @@ data.mouse_rotate=true;
 data=loadmousepointershapes(data);
 data.handles=handles;
 data.trans=[0 0 0];
-if length(addinarg)==2
-    data.Mview=addinarg{2};
-else
-    data.Mview=[1 0 0 0;0 1 0 0; 0 0 1 0; 0 0 0 1];
-end
 setMyData(data);
 
 set(data.handles.axes1,'ButtonDownFcn',@axes1_ButtonDownFcn);
@@ -195,7 +213,7 @@ R=Rx*Ry*Rz;
 %     0 0 1/s(3) 0;
 %     0 0 0 1];
 
-function axes1_ButtonDownFcn(~, ~)
+function axes1_ButtonDownFcn(hObject, eventdata)
 data=getMyData(); if(isempty(data)), return, end
 handles=data.handles;
 data.mouse_pressed=true;
@@ -203,7 +221,11 @@ data.mouse_button=get(handles.figure1,'SelectionType');
 data.mouse_position_pressed=data.mouse_position;
 switch data.mouse_button
     case 'normal'
-        disp('Left mouse button is not assigned')
+        if isempty(data.LeftButtonFcn)
+            disp('Left mouse button is not assigned.')
+        else
+            data.LeftButtonFcn(hObject, eventdata)
+        end
     case 'extend'
         if(data.mouse_rotate)
             data.mouse_button='rotate1';
@@ -289,13 +311,16 @@ end
 
 % Executes on mouse press over figure background, over a disabled or
 % inactive control, or over an axes background.
-function figure1_WindowButtonUpFcn(~, ~)
+function figure1_WindowButtonUpFcn(hObject, eventdata)
 data=getMyData(); if(isempty(data)), return, end
 if(data.mouse_pressed)
     data.mouse_pressed=false;
     setMyData(data);
 end
 set_mouse_shape('arrow',data)
+if ~isempty(data.ButtonUpFcn)
+    data.ButtonUpFcn(hObject, eventdata)
+end
 
 function cursor_position_in_axes()
 data=getMyData(); if(isempty(data)), return, end
@@ -313,13 +338,17 @@ function data=getMyData()
 data=getappdata(gcf,'data3d');
 
 % Executes on key press with focus on figure1 and none of its controls.
-function figure1_KeyPressFcn(~, eventdata)
+function figure1_KeyPressFcn(hObject, eventdata)
 data=getMyData();
 % determine the key that was pressed
 keyPressed = lower(eventdata.Key);
 switch keyPressed
     case 'space'
-        disp('Space key is not assigned')
+        if isempty(data.SpaceKeyFcn)
+            disp('Space key is not assigned.')
+        else
+            data.SpaceKeyFcn(hObject, eventdata)
+        end
     case 'r'
         data.mouse_rotate=~data.mouse_rotate;
         setMyData(data)
