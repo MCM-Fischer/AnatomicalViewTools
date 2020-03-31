@@ -118,4 +118,6 @@ switch target
         TFM = createRotationOx( pi/2)*createRotationOy( pi/2);
 end
 
+TFM=round(TFM);
+
 end
