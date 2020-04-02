@@ -28,6 +28,9 @@ function mouseControl3d(varargin)
 %       colormap hsv
 %       mouseControl3d
 %
+%   To Do:
+%       - Remove gcf
+%
 %   Source:
 %       mouse3d - version 1.0 (3.8 KB) by Dirk-Jan Kroon:
 %       https://www.mathworks.com/matlabcentral/fileexchange/28095
@@ -35,7 +38,7 @@ function mouseControl3d(varargin)
 % ---------
 % Author: Dirk-Jan Kroon (source), MCMF (update)
 % Created: 2010-07
-% Update: 2020-02
+% Update: 2020-04
 %
 
 axH=gca;
@@ -50,7 +53,7 @@ end
 handles.figure1=get(axH,'Parent');
 handles.axes1=axH;
 
-mouseControl3d_OpeningFcn(gcf, handles, varargin{:});
+mouseControl3d_OpeningFcn(handles.figure1, handles, varargin{:});
 
 function mouseControl3d_OpeningFcn(hObject, handles, varargin)
 
@@ -286,22 +289,22 @@ I(I==0)=NaN; data.icon_mouse_pan=I;
 function set_mouse_shape(type,data)
 switch(type)
     case 'rotate1'
-        set(gcf,'Pointer','custom','PointerShapeCData',...
+        set(data.handles.figure1,'Pointer','custom','PointerShapeCData',...
             data.icon_mouse_rotate1,'PointerShapeHotSpot',...
             round(size(data.icon_mouse_rotate1)/2))
         set(data.handles.figure1,'Pointer','custom');
     case 'rotate2'
-        set(gcf,'Pointer','custom','PointerShapeCData',...
+        set(data.handles.figure1,'Pointer','custom','PointerShapeCData',...
             data.icon_mouse_rotate2,'PointerShapeHotSpot',...
             round(size(data.icon_mouse_rotate2)/2))
         set(data.handles.figure1,'Pointer','custom');
     case 'zoom'
-        set(gcf,'Pointer','custom','PointerShapeCData',...
+        set(data.handles.figure1,'Pointer','custom','PointerShapeCData',...
             data.icon_mouse_zoom,'PointerShapeHotSpot',...
             round(size(data.icon_mouse_zoom)/2))
         set(data.handles.figure1,'Pointer','custom');
     case 'pan'
-        set(gcf,'Pointer','custom','PointerShapeCData',...
+        set(data.handles.figure1,'Pointer','custom','PointerShapeCData',...
             data.icon_mouse_pan,'PointerShapeHotSpot',...
             round(size(data.icon_mouse_pan)/2))
         set(data.handles.figure1,'Pointer','custom');
@@ -331,7 +334,7 @@ setMyData(data);
 
 function setMyData(data)
 % Store data struct in figure
-setappdata(gcf,'data3d',data);
+setappdata(data.handles.figure1,'data3d',data);
 
 function data=getMyData()
 % Get data struct stored in figure
