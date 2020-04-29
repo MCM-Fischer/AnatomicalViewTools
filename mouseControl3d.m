@@ -50,7 +50,7 @@ if ~isempty(varargin)
     end
 end
 
-handles.figure1=get(axH,'Parent');
+handles.figure1=ancestor(axH,{'figure'},'toplevel');
 handles.axes1=axH;
 
 mouseControl3d_OpeningFcn(handles.figure1, handles, varargin{:});
