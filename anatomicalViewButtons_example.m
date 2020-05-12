@@ -1,8 +1,11 @@
 clearvars; close all; opengl hardware
 
 %% Load example data
-websave('z013.mat','https://github.com/RWTHmediTEC/VSDFullBodyBoneModels/raw/master/Bones/z013.mat');
-load('z013.mat') % in 'RAS'
+exampleFile = 'z013.mat';
+if ~exist(exampleFile,'file')
+websave(exampleFile,'https://github.com/RWTHmediTEC/VSDFullBodyBoneModels/raw/master/Bones/z013.mat');
+end
+load(exampleFile) % in 'RAS'
 mesh=B(5).mesh;
 
 %% Test

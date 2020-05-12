@@ -333,12 +333,12 @@ data.mouse_position=[p(1, 1) p(1, 2)];
 setMyData(data);
 
 function setMyData(data)
-% Store data struct in figure
-setappdata(data.handles.figure1,'data3d',data);
+% Store data struct in axes
+setappdata(data.handles.axes1,'data',data);
 
 function data=getMyData()
-% Get data struct stored in figure
-data=getappdata(gcf,'data3d');
+% Get data struct stored in current axes
+data=getappdata(gca,'data');
 
 % Executes on key press with focus on figure1 and none of its controls.
 function figure1_KeyPressFcn(hObject, eventdata)
