@@ -28,9 +28,6 @@ function mouseControl3d(varargin)
 %       colormap hsv
 %       mouseControl3d
 %
-%   To Do:
-%       - Remove gcf
-%
 %   Source:
 %       mouse3d - version 1.0 (3.8 KB) by Dirk-Jan Kroon:
 %       https://www.mathworks.com/matlabcentral/fileexchange/28095
@@ -52,7 +49,7 @@ end
 
 handles.figure1=ancestor(axH,{'figure'},'toplevel');
 handles.axes1=axH;
-
+axes(axH)
 mouseControl3d_OpeningFcn(handles.figure1, handles, varargin{:});
 
 function mouseControl3d_OpeningFcn(hObject, handles, varargin)
