@@ -49,7 +49,6 @@ end
 
 handles.figure1=ancestor(axH,{'figure'},'toplevel');
 handles.axes1=axH;
-axes(axH)
 mouseControl3d_OpeningFcn(handles.figure1, handles, varargin{:});
 
 function mouseControl3d_OpeningFcn(hObject, handles, varargin)
