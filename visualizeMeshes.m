@@ -6,11 +6,25 @@ function varargout = visualizeMeshes(mesh, patchProps)
 % LICENSE: EUPL v1.2
 %
 
+defPatchProps.EdgeColor = 'none';
+defPatchProps.FaceColor = [223, 206, 161]/255;
+defPatchProps.FaceAlpha = 1;
+defPatchProps.FaceLighting = 'gouraud';
+
 if nargin == 1
-    patchProps(1).EdgeColor = 'none';
-    patchProps(1).FaceColor = [223, 206, 161]/255;
-    patchProps(1).FaceAlpha = 1;
-    patchProps(1).FaceLighting = 'gouraud';
+    patchProps = defPatchProps;
+else
+    if isempty(patchProps)
+        patchProps = defPatchProps;
+    elseif length(patchProps) == 1
+        % Add missing fields
+        defFields = fieldnames(defPatchProps);
+        fields = fieldnames(patchProps);
+        defFields(ismember(defFields,fields))=[];
+        for f=1:length(defFields)
+            patchProps.(defFields{f}) = defPatchProps.(defFields{f});
+        end
+    end
 end
 
 if length(patchProps)==1
