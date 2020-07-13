@@ -39,6 +39,7 @@ if     size(MonitorsPos,1) == 1
 elseif size(MonitorsPos,1) == 2
     set(figHandle,'OuterPosition',[1+MonitorsPos(1,3) 50 MonitorsPos(2,3)-1 MonitorsPos(2,4)-50]);
 end
+figHandle.WindowState = 'maximized';
 
 axHandle = axes;
 meshHandle=zeros(length(mesh),1);
