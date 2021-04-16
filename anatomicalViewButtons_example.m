@@ -1,5 +1,8 @@
 clearvars; close all; opengl hardware
 
+% matGeom (https://github.com/mattools/matGeom) has to be added to the 
+% MATLAB path to use this example.
+
 %% Load example data
 exampleFile = 'z013.mat';
 if ~exist(exampleFile,'file')

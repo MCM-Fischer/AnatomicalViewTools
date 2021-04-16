@@ -1,8 +1,8 @@
 function varargout = visualizeMeshes(mesh, patchProps, varargin)
-%VISUALIZEMESHES plots a struct array of meshes in a new figure
+%VISUALIZEMESHES plots a struct array of meshes
 %
 % AUTHOR: Maximilian C. M. Fischer
-% COPYRIGHT (C) 2020 Maximilian C. M. Fischer
+% COPYRIGHT (C) 2021 Maximilian C. M. Fischer
 % LICENSE: EUPL v1.2
 %
 
@@ -58,7 +58,10 @@ if ~exist('figHandle', 'var')
     figHandle.WindowState = 'maximized';
 end
 
-if ~exist('axHandle', 'var')
+lightSwitch = 1;
+if exist('axHandle', 'var')
+    lightSwitch = 0;
+else
     axHandle = axes;
 end
 meshHandle=zeros(length(mesh),1);
@@ -66,10 +69,11 @@ for i=1:length(mesh)
     meshHandle(i) = patch(axHandle, mesh(i), patchProps(i));
 end
 
-H_Light(1) = light(axHandle); light(axHandle, 'Position', -1*(get(H_Light(1),'Position')));
-% cameratoolbar('SetCoordSys','none')
-axis(axHandle, 'on'); axis(axHandle, 'equal'); hold(axHandle, 'on')
-xlabel(axHandle, 'x'); ylabel(axHandle, 'y'); zlabel(axHandle, 'z');
+if lightSwitch
+    H_Light(1) = light(axHandle); light(axHandle, 'Position', -1*(get(H_Light(1),'Position')));
+    axis(axHandle, 'on'); axis(axHandle, 'equal'); hold(axHandle, 'on')
+    xlabel(axHandle, 'x'); ylabel(axHandle, 'y'); zlabel(axHandle, 'z');
+end
 
 if nargout > 0
     varargout{1} = meshHandle;
