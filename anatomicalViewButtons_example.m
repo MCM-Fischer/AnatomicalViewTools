@@ -1,14 +1,16 @@
-clearvars; close all; opengl hardware
-
+clearvars; close all
 % matGeom (https://github.com/mattools/matGeom) has to be added to the 
 % MATLAB path to use this example.
 
 %% Load example data
 exampleFile = 'z013.mat';
 if ~exist(exampleFile,'file')
-websave(exampleFile,'https://github.com/RWTHmediTEC/VSDFullBodyBoneModels/raw/master/Bones/z013.mat');
+    websave(exampleFile,...
+        'https://github.com/MCM-Fischer/VSDFullBodyBoneModels/raw/master/Bones/z013.mat');
 end
-load(exampleFile) % in 'RAS'
+load(exampleFile)
+iOrientation = 'LPS'; % The data has an LPS orientation
+% Select the left femur
 mesh=B(5).mesh;
 
 %% Test
@@ -22,11 +24,11 @@ validStrings={...
 
 aCS1=validStrings{randi(24)};
 aCS2=validStrings{randi(24)};
-mesh=transformPoint3d(mesh, anatomicalOrientationTFM('RAS',aCS1));
+mesh=transformPoint3d(mesh, anatomicalOrientationTFM(iOrientation,aCS1));
 mesh=transformPoint3d(mesh, anatomicalOrientationTFM(aCS1, aCS2));
-mesh=transformPoint3d(mesh, anatomicalOrientationTFM(aCS2,'RAS'));
+mesh=transformPoint3d(mesh, anatomicalOrientationTFM(aCS2,iOrientation));
 visualizeMeshes(mesh)
-anatomicalViewButtons('RAS')
+anatomicalViewButtons(iOrientation)
 
 %% R
 %% Convert 'RAS' to 'RIA'

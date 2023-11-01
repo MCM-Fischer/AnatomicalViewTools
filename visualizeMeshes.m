@@ -2,7 +2,7 @@ function varargout = visualizeMeshes(mesh, patchProps, varargin)
 %VISUALIZEMESHES plots a struct array of meshes
 %
 % AUTHOR: Maximilian C. M. Fischer
-% COPYRIGHT (C) 2021 Maximilian C. M. Fischer
+% COPYRIGHT (C) 2021-2023 Maximilian C. M. Fischer
 % LICENSE: EUPL v1.2
 %
 
@@ -49,7 +49,7 @@ end
 if ~exist('figHandle', 'var')
     % New figure
     MonitorsPos = get(0,'MonitorPositions');
-    figHandle = figure('Units','pixels','renderer','opengl', 'Color', 'w');
+    figHandle = figure('Units','pixels', 'Color', 'w');
     if     size(MonitorsPos,1) == 1
         set(figHandle,'OuterPosition',[1 50 MonitorsPos(1,3)-1 MonitorsPos(1,4)-50]);
     elseif size(MonitorsPos,1) == 2
